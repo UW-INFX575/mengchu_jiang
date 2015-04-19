@@ -1,21 +1,49 @@
-import re
+__author__ = 'sara'
+
 import os
+import re
+from BeautifulSoup import BeautifulSoup
+from urllib2 import urlopen
 
-txt = open("filename")
-file = txt.read()
+if (os.path.isfile("AAllport.html") != True):
+    URL = "https://www.maxwell.syr.edu/hist/Maxwell_School__Alan_Allport,_Assistant_Professor,_History/"
+    os.system('wget %s -O AAllport.html' % URL)
+html = open("AAllport.html").read()
+soup = BeautifulSoup(html)
 
-title = re.search('<title>(.*)</title>', file)
+fullName = soup.find("h1").string
+try:
+    result = re.split("\s",fullName)
+    countNames = len(result)
+    lastName = result[countNames - 1]
+    if countNames == 2:
+        firstName = result[0]
+    else:
+        firstName = " ".join(result[:countNames-2])
+except:
+    firstName = ""
+    lastName = fullName
 
->>> title = re.search('<title>(.*)</title>', file)
->>> title
-<_sre.SRE_Match object; span=(346, 419), match='<title>Jevin West | Information School | Universi>
+match = soup.find("h2").string
+try:
+    result = re.split(",\s",match)
+    facultyTitle = result[0]
+    facultyDept = result[1]
+except:
+    print "Unable to detect title or department from: %s" % match
+    facultyTitle = ""
+    facultyDept = ""
 
-title = re.search(r'(?<=<title>).*?(?=\s)',file)
-title = re.search(r'(?<=<title>).*?(?=</title>)',file)
+degree = re.search(r'(?<=</h3>\n<p>).*?(?=</p>)',html)
+if degree:
+    result = re.split(", ", degree.group())
+    gradSchool = result[1]
 
-# title = re.search('<title>(.*)</title>', file, re.IGNORECASE).group(1)
+facultySchool = "Syracuse"
+data = [firstName,lastName,gradSchool,facultyTitle,facultyDept,facultySchool]
 
->>> title = re.search(r'(?<=<h1>).*?(?=</h1>)',file)
->>> title
-<_sre.SRE_Match object; span=(10082, 10097), match='Kristi Andersen'>
-<_sre.SRE_Match object; span=(9509, 9527), match='Elizabeth F. Cohen'>
+print data
+#
+# output :
+# [u'Alan', u'Allport', 'University of Pennsylvania', u'Assistant Professor', u'History', 'Syracuse']
+#
