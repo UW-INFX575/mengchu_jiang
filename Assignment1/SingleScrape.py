@@ -1,5 +1,7 @@
 __author__ = 'sara'
 
+# http://www.snip2code.com/snippet/297497/some-code-that-works-for-me-----(JournoC
+
 import os
 import re
 import csv
